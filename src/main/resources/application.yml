@@ -1,0 +1,12 @@
+server:
+  port: 7777
+spring:
+  application:
+    name: app-need-to-start-test
+  profiles:
+    active: test
+    redis:
+      repositories:
+        enabled: false
+
+

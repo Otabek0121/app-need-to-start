@@ -1,0 +1,27 @@
+spring:
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yml
+    enabled: false
+  application:
+    name: app-need-to-start-test
+  datasource:
+    url: jdbc:postgresql://localhost:5432/need_to_start
+    username: postgres
+    password: 20030121
+    datasource:
+      driver-class-name: org.postgresql.Driver
+
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+
+jwt:
+  access:
+    key: 3310a804zxc566drev4517CVCBNfa112uyy5f4e37c3f7499d60e9vcbsb932s4bd6sbe02ew458b4b7ded5d01
+    expiration-time: 60000
+
+  refresh:
+    key: xvnjsdfSFSGsafmwfc566drev4517CVsdvhjb544d60e9vcbsb9sdfe56v651rv54dsvanerv46dsvamdlkveevknee
+    expiration-time: 600000
+

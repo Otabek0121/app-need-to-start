@@ -1,0 +1,419 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1-create-subject-table
+      author: Rajabov_Otabek
+      changes:
+        - createTable:
+            tableName: subject
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: TEXT
+              # Inherited Audit Columns
+              - column:
+                  name: created_at
+                  type: TIMESTAMP WITHOUT TIME ZONE
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP WITHOUT TIME ZONE
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: deleted
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_by_id
+                  type: UUID
+              - column:
+                  name: updated_by_id
+                  type: UUID
+        - sql:
+            comment: Add comments for subject table
+            sql: |
+              COMMENT ON TABLE subject IS 'Represents academic subjects';
+              COMMENT ON COLUMN subject.deleted IS 'Flag for soft delete (@SQLDelete/@Where)';
+
+  - changeSet:
+      id: 2-create-topic-table
+      author: Rajabov_Otabek
+      changes:
+        - createTable:
+            tableName: topic
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+              - column:
+                  name: description
+                  type: TEXT
+              - column:
+                  name: subject_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_topic_subject
+                    references: subject(id)
+              # Inherited Audit Columns
+              - column: { name: created_at, type: TIMESTAMP WITHOUT TIME ZONE, defaultValueComputed: CURRENT_TIMESTAMP, constraints: { nullable: false } }
+              - column: { name: updated_at, type: TIMESTAMP WITHOUT TIME ZONE, defaultValueComputed: CURRENT_TIMESTAMP }
+              - column: { name: deleted, type: BOOLEAN, defaultValueBoolean: false, constraints: { nullable: false } }
+              - column: { name: created_by_id, type: UUID }
+              - column: { name: updated_by_id, type: UUID }
+        - sql:
+            comment: Add comments for topic table
+            sql: |
+              COMMENT ON TABLE topic IS 'Represents topics within a subject';
+              COMMENT ON COLUMN topic.deleted IS 'Flag for soft delete (@SQLDelete/@Where)';
+
+  - changeSet:
+      id: 3-create-question-table
+      author: Rajabov_Otabek
+      changes:
+        - createTable:
+            tableName: question
+            columns:
+              - column: { name: id, type: UUID, constraints: { primaryKey: true, nullable: false } }
+              - column:
+                  name: subject_id
+                  type: UUID
+                  constraints:
+                    nullable: false # Assuming subject is mandatory for a question
+                    foreignKeyName: fk_question_subject
+                    references: subject(id)
+              - column:
+                  name: topic_id
+                  type: UUID
+                  constraints:
+                    nullable: true # Assuming topic can be optional
+                    foreignKeyName: fk_question_topic
+                    references: topic(id)
+              - column:
+                  name: text
+                  type: TEXT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: image_url
+                  type: VARCHAR(512)
+              - column:
+                  name: is_single_choice
+                  type: BOOLEAN
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: difficulty_level
+                  type: VARCHAR(50) # Adjust size based on enum names
+                  constraints:
+                    nullable: false
+              # Inherited Audit Columns
+              - column: { name: created_at, type: TIMESTAMP WITHOUT TIME ZONE, defaultValueComputed: CURRENT_TIMESTAMP, constraints: { nullable: false } }
+              - column: { name: updated_at, type: TIMESTAMP WITHOUT TIME ZONE, defaultValueComputed: CURRENT_TIMESTAMP }
+              - column: { name: deleted, type: BOOLEAN, defaultValueBoolean: false, constraints: { nullable: false } }
+              - column: { name: created_by_id, type: UUID }
+              - column: { name: updated_by_id, type: UUID }
+        - sql:
+            comment: Add comments for question table
+            sql: |
+              COMMENT ON TABLE question IS 'Stores test questions';
+              COMMENT ON COLUMN question.difficulty_level IS 'Enum: EASY, MEDIUM, HARD etc.';
+              COMMENT ON COLUMN question.deleted IS 'Flag for soft delete (@SQLDelete/@Where)';
+
+  - changeSet:
+      id: 4-create-answer-option-table
+      author: Rajabov_Otabek
+      changes:
+        - createTable:
+            tableName: answer_option
+            columns:
+              - column: { name: id, type: UUID, constraints: { primaryKey: true, nullable: false } }
+              - column:
+                  name: question_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_answer_option_question
+                    references: question(id)
+              - column:
+                  name: text
+                  type: TEXT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: corrected
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              # Inherited Audit Columns
+              - column: { name: created_at, type: TIMESTAMP WITHOUT TIME ZONE, defaultValueComputed: CURRENT_TIMESTAMP, constraints: { nullable: false } }
+              - column: { name: updated_at, type: TIMESTAMP WITHOUT TIME ZONE, defaultValueComputed: CURRENT_TIMESTAMP }
+              - column: { name: deleted, type: BOOLEAN, defaultValueBoolean: false, constraints: { nullable: false } }
+              - column: { name: created_by_id, type: UUID }
+              - column: { name: updated_by_id, type: UUID }
+        - sql:
+            comment: Add comments for answer_option table
+            sql: |
+              COMMENT ON TABLE answer_option IS 'Possible answers for a question';
+              COMMENT ON COLUMN answer_option.deleted IS 'Flag for soft delete (@SQLDelete/@Where)';
+
+  - changeSet:
+      id: 5-create-user-table
+      author: Rajabov_Otabek
+      changes:
+        - createTable:
+            tableName: users
+            columns:
+              - column: { name: id, type: UUID, constraints: { primaryKey: true, nullable: false } }
+              - column: { name: first_name, type: VARCHAR(100) }
+              - column: { name: last_name, type: VARCHAR(100) }
+              - column:
+                  name: email
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+                    uniqueConstraintName: uk_users_email
+              - column:
+                  name: password
+                  type: VARCHAR(255) # Adjust size based on hashing algorithm output
+                  constraints:
+                    nullable: false
+              - column: { name: token_issued_at, type: TIMESTAMP WITHOUT TIME ZONE }
+              - column: { name: account_non_expired, type: BOOLEAN, defaultValueBoolean: true, constraints: { nullable: false } }
+              - column: { name: account_non_locked, type: BOOLEAN, defaultValueBoolean: true, constraints: { nullable: false } }
+              - column: { name: credentials_non_expired, type: BOOLEAN, defaultValueBoolean: true, constraints: { nullable: false } }
+              - column: { name: enabled, type: BOOLEAN, defaultValueBoolean: true, constraints: { nullable: false } }
+              # Inherited Audit Columns
+              - column: { name: created_at, type: TIMESTAMP WITHOUT TIME ZONE, defaultValueComputed: CURRENT_TIMESTAMP, constraints: { nullable: false } }
+              - column: { name: updated_at, type: TIMESTAMP WITHOUT TIME ZONE, defaultValueComputed: CURRENT_TIMESTAMP }
+              - column: { name: deleted, type: BOOLEAN, defaultValueBoolean: false, constraints: { nullable: false } } # Corresponds to @SQLDelete usage
+              - column: { name: created_by_id, type: UUID }
+              - column: { name: updated_by_id, type: UUID }
+        - sql:
+            comment: Add comments for users table
+            sql: |
+              COMMENT ON TABLE users IS 'Application users';
+              COMMENT ON COLUMN users.deleted IS 'Flag for soft delete (@SQLDelete/@Where), used with enabled';
+
+  - changeSet:
+      id: 6-create-user-roles-table
+      author: Rajabov_Otabek
+      changes:
+        - createTable:
+            tableName: user_roles # Table for @ElementCollection
+            columns:
+              - column:
+                  name: user_id # Foreign key back to users table
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_user_roles_user
+                    references: users(id)
+              - column:
+                  name: role_name # Stores the enum string value
+                  type: VARCHAR(50) # Adjust size based on UserRoleEnum names
+                  constraints:
+                    nullable: false
+        - addPrimaryKey:
+            tableName: user_roles
+            columnNames: user_id, role_name
+            constraintName: pk_user_roles
+        - sql:
+            comment: Add comment for user_roles join table
+            sql: COMMENT ON TABLE user_roles IS 'Join table for users and their roles (@ElementCollection)';
+
+  - changeSet:
+      id: 7-create-test-table
+      author: Rajabov_Otabek
+      changes:
+        - createTable:
+            tableName: test
+            columns:
+              - column: { name: id, type: UUID, constraints: { primaryKey: true, nullable: false } }
+              - column: { name: title, type: VARCHAR(255) }
+              - column: { name: description, type: TEXT }
+              - column:
+                  name: subject_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_test_subject
+                    references: subject(id)
+              - column:
+                  name: duration # Store duration in a numeric format (e.g., seconds or milliseconds)
+                  type: BIGINT
+              - column:
+                  name: active
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              - column: { name: start_time, type: TIMESTAMP WITHOUT TIME ZONE }
+              - column: { name: end_time, type: TIMESTAMP WITHOUT TIME ZONE }
+              # Inherited Audit Columns
+              - column: { name: created_at, type: TIMESTAMP WITHOUT TIME ZONE, defaultValueComputed: CURRENT_TIMESTAMP, constraints: { nullable: false } }
+              - column: { name: updated_at, type: TIMESTAMP WITHOUT TIME ZONE, defaultValueComputed: CURRENT_TIMESTAMP }
+              - column: { name: deleted, type: BOOLEAN, defaultValueBoolean: false, constraints: { nullable: false } }
+              - column: { name: created_by_id, type: UUID }
+              - column: { name: updated_by_id, type: UUID }
+        - sql:
+            comment: Add comments for test table
+            sql: |
+              COMMENT ON TABLE test IS 'Represents a test configuration';
+              COMMENT ON COLUMN test.duration IS 'Duration of the test, e.g., in seconds or milliseconds (mapped from java.time.Duration)';
+              COMMENT ON COLUMN test.deleted IS 'Flag for soft delete (@SQLDelete/@Where)';
+
+  - changeSet:
+      id: 8-create-test-question-table
+      author: Rajabov_Otabek
+      changes:
+        - createTable:
+            tableName: test_question # Join table between Test and Question
+            columns:
+              - column: { name: id, type: UUID, constraints: { primaryKey: true, nullable: false } } # It has its own ID
+              - column:
+                  name: test_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_test_question_test
+                    references: test(id)
+              - column:
+                  name: question_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_test_question_question
+                    references: question(id)
+              # Inherited Audit Columns
+              - column: { name: created_at, type: TIMESTAMP WITHOUT TIME ZONE, defaultValueComputed: CURRENT_TIMESTAMP, constraints: { nullable: false } }
+              - column: { name: updated_at, type: TIMESTAMP WITHOUT TIME ZONE, defaultValueComputed: CURRENT_TIMESTAMP }
+              - column: { name: deleted, type: BOOLEAN, defaultValueBoolean: false, constraints: { nullable: false } }
+              - column: { name: created_by_id, type: UUID }
+              - column: { name: updated_by_id, type: UUID }
+        - addUniqueConstraint:
+            tableName: test_question
+            columnNames: test_id, question_id # Enforce unique combination
+            constraintName: uk_test_question_test_question
+        - sql:
+            comment: Add comments for test_question table
+            sql: |
+              COMMENT ON TABLE test_question IS 'Associates questions with tests';
+              COMMENT ON COLUMN test_question.deleted IS 'Flag for soft delete (@SQLDelete/@Where)';
+
+  - changeSet:
+      id: 9-create-test-attempt-table
+      author: Rajabov_Otabek
+      changes:
+        - createTable:
+            tableName: test_attempt
+            columns:
+              - column: { name: id, type: UUID, constraints: { primaryKey: true, nullable: false } }
+              - column:
+                  name: user_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_test_attempt_user
+                    references: users(id)
+              - column:
+                  name: test_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_test_attempt_test
+                    references: test(id)
+              - column:
+                  name: start_time
+                  type: TIMESTAMP WITHOUT TIME ZONE
+                  constraints:
+                    nullable: false
+              - column: { name: end_time, type: TIMESTAMP WITHOUT TIME ZONE }
+              - column: { name: submitted_at, type: TIMESTAMP WITHOUT TIME ZONE }
+              - column:
+                  name: score
+                  type: INT
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status # Enum AttemptStatusEnum
+                  type: VARCHAR(50) # Adjust size based on enum names
+                  constraints:
+                    nullable: false
+              # Inherited Audit Columns
+              - column: { name: created_at, type: TIMESTAMP WITHOUT TIME ZONE, defaultValueComputed: CURRENT_TIMESTAMP, constraints: { nullable: false } }
+              - column: { name: updated_at, type: TIMESTAMP WITHOUT TIME ZONE, defaultValueComputed: CURRENT_TIMESTAMP }
+              - column: { name: deleted, type: BOOLEAN, defaultValueBoolean: false, constraints: { nullable: false } }
+              - column: { name: created_by_id, type: UUID }
+              - column: { name: updated_by_id, type: UUID }
+        - sql:
+            comment: Add comments for test_attempt table
+            sql: |
+              COMMENT ON TABLE test_attempt IS 'Records user attempts at tests';
+              COMMENT ON COLUMN test_attempt.status IS 'Enum: STARTED, IN_PROGRESS, SUBMITTED, COMPLETED, etc.';
+              COMMENT ON COLUMN test_attempt.deleted IS 'Flag for soft delete (@SQLDelete/@Where)';
+
+  - changeSet:
+      id: 10-create-user-answer-table
+      author: Rajabov_Otabek
+      changes:
+        - createTable:
+            tableName: user_answer
+            columns:
+              - column: { name: id, type: UUID, constraints: { primaryKey: true, nullable: false } }
+              - column:
+                  name: attempt_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_user_answer_attempt
+                    references: test_attempt(id)
+              - column:
+                  name: question_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_user_answer_question
+                    references: question(id)
+              - column:
+                  name: chosen_answer_option_id
+                  type: UUID
+                  constraints:
+                    nullable: false # Or true if skipping questions is allowed? Assuming false based on entity.
+                    foreignKeyName: fk_user_answer_chosen_option
+                    references: answer_option(id)
+              # Inherited Audit Columns
+              - column: { name: created_at, type: TIMESTAMP WITHOUT TIME ZONE, defaultValueComputed: CURRENT_TIMESTAMP, constraints: { nullable: false } }
+              - column: { name: updated_at, type: TIMESTAMP WITHOUT TIME ZONE, defaultValueComputed: CURRENT_TIMESTAMP }
+              - column: { name: deleted, type: BOOLEAN, defaultValueBoolean: false, constraints: { nullable: false } }
+              - column: { name: created_by_id, type: UUID }
+              - column: { name: updated_by_id, type: UUID }
+        - sql:
+            comment: Add comments for user_answer table
+            sql: |
+              COMMENT ON TABLE user_answer IS 'Records the specific answer chosen by a user for a question during an attempt';
+              COMMENT ON COLUMN user_answer.deleted IS 'Flag for soft delete (@SQLDelete/@Where)';

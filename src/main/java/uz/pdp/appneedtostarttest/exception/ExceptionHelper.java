@@ -41,10 +41,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-/**
- * @author Muhammad Mo'minov
- * 06.11.2021
- */
+
 @RestControllerAdvice
 @RequiredArgsConstructor
 @Order(value = Ordered.HIGHEST_PRECEDENCE)

@@ -20,7 +20,7 @@ databaseChangeLog:
               - column:
                   name: description
                   type: TEXT
-              # Inherited Audit Columns
+
               - column:
                   name: created_at
                   type: TIMESTAMP WITHOUT TIME ZONE
@@ -75,7 +75,6 @@ databaseChangeLog:
                     nullable: false
                     foreignKeyName: fk_topic_subject
                     references: subject(id)
-              # Inherited Audit Columns
               - column: { name: created_at, type: TIMESTAMP WITHOUT TIME ZONE, defaultValueComputed: CURRENT_TIMESTAMP, constraints: { nullable: false } }
               - column: { name: updated_at, type: TIMESTAMP WITHOUT TIME ZONE, defaultValueComputed: CURRENT_TIMESTAMP }
               - column: { name: deleted, type: BOOLEAN, defaultValueBoolean: false, constraints: { nullable: false } }
@@ -99,14 +98,14 @@ databaseChangeLog:
                   name: subject_id
                   type: UUID
                   constraints:
-                    nullable: false # Assuming subject is mandatory for a question
+                    nullable: false 
                     foreignKeyName: fk_question_subject
                     references: subject(id)
               - column:
                   name: topic_id
                   type: UUID
                   constraints:
-                    nullable: true # Assuming topic can be optional
+                    nullable: true 
                     foreignKeyName: fk_question_topic
                     references: topic(id)
               - column:
@@ -125,7 +124,7 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: difficulty_level
-                  type: VARCHAR(50) # Adjust size based on enum names
+                  type: VARCHAR(50) 
                   constraints:
                     nullable: false
               # Inherited Audit Columns
@@ -167,7 +166,7 @@ databaseChangeLog:
                   defaultValueBoolean: false
                   constraints:
                     nullable: false
-              # Inherited Audit Columns
+             
               - column: { name: created_at, type: TIMESTAMP WITHOUT TIME ZONE, defaultValueComputed: CURRENT_TIMESTAMP, constraints: { nullable: false } }
               - column: { name: updated_at, type: TIMESTAMP WITHOUT TIME ZONE, defaultValueComputed: CURRENT_TIMESTAMP }
               - column: { name: deleted, type: BOOLEAN, defaultValueBoolean: false, constraints: { nullable: false } }
@@ -198,7 +197,7 @@ databaseChangeLog:
                     uniqueConstraintName: uk_users_email
               - column:
                   name: password
-                  type: VARCHAR(255) # Adjust size based on hashing algorithm output
+                  type: VARCHAR(255)
                   constraints:
                     nullable: false
               - column: { name: token_issued_at, type: TIMESTAMP WITHOUT TIME ZONE }
@@ -223,18 +222,18 @@ databaseChangeLog:
       author: Rajabov_Otabek
       changes:
         - createTable:
-            tableName: user_roles # Table for @ElementCollection
+            tableName: user_roles 
             columns:
               - column:
-                  name: user_id # Foreign key back to users table
+                  name: user_id 
                   type: UUID
                   constraints:
                     nullable: false
                     foreignKeyName: fk_user_roles_user
                     references: users(id)
               - column:
-                  name: role_name # Stores the enum string value
-                  type: VARCHAR(50) # Adjust size based on UserRoleEnum names
+                  name: role_name 
+                  type: VARCHAR(50) 
                   constraints:
                     nullable: false
         - addPrimaryKey:
@@ -263,7 +262,7 @@ databaseChangeLog:
                     foreignKeyName: fk_test_subject
                     references: subject(id)
               - column:
-                  name: duration # Store duration in a numeric format (e.g., seconds or milliseconds)
+                  name: duration 
                   type: BIGINT
               - column:
                   name: active
@@ -273,7 +272,7 @@ databaseChangeLog:
                     nullable: false
               - column: { name: start_time, type: TIMESTAMP WITHOUT TIME ZONE }
               - column: { name: end_time, type: TIMESTAMP WITHOUT TIME ZONE }
-              # Inherited Audit Columns
+
               - column: { name: created_at, type: TIMESTAMP WITHOUT TIME ZONE, defaultValueComputed: CURRENT_TIMESTAMP, constraints: { nullable: false } }
               - column: { name: updated_at, type: TIMESTAMP WITHOUT TIME ZONE, defaultValueComputed: CURRENT_TIMESTAMP }
               - column: { name: deleted, type: BOOLEAN, defaultValueBoolean: false, constraints: { nullable: false } }
@@ -291,9 +290,9 @@ databaseChangeLog:
       author: Rajabov_Otabek
       changes:
         - createTable:
-            tableName: test_question # Join table between Test and Question
+            tableName: test_question 
             columns:
-              - column: { name: id, type: UUID, constraints: { primaryKey: true, nullable: false } } # It has its own ID
+              - column: { name: id, type: UUID, constraints: { primaryKey: true, nullable: false } } 
               - column:
                   name: test_id
                   type: UUID
@@ -308,7 +307,7 @@ databaseChangeLog:
                     nullable: false
                     foreignKeyName: fk_test_question_question
                     references: question(id)
-              # Inherited Audit Columns
+             
               - column: { name: created_at, type: TIMESTAMP WITHOUT TIME ZONE, defaultValueComputed: CURRENT_TIMESTAMP, constraints: { nullable: false } }
               - column: { name: updated_at, type: TIMESTAMP WITHOUT TIME ZONE, defaultValueComputed: CURRENT_TIMESTAMP }
               - column: { name: deleted, type: BOOLEAN, defaultValueBoolean: false, constraints: { nullable: false } }
@@ -316,7 +315,7 @@ databaseChangeLog:
               - column: { name: updated_by_id, type: UUID }
         - addUniqueConstraint:
             tableName: test_question
-            columnNames: test_id, question_id # Enforce unique combination
+            columnNames: test_id, question_id 
             constraintName: uk_test_question_test_question
         - sql:
             comment: Add comments for test_question table
@@ -360,11 +359,11 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
-                  name: status # Enum AttemptStatusEnum
-                  type: VARCHAR(50) # Adjust size based on enum names
+                  name: status 
+                  type: VARCHAR(50)
                   constraints:
                     nullable: false
-              # Inherited Audit Columns
+            
               - column: { name: created_at, type: TIMESTAMP WITHOUT TIME ZONE, defaultValueComputed: CURRENT_TIMESTAMP, constraints: { nullable: false } }
               - column: { name: updated_at, type: TIMESTAMP WITHOUT TIME ZONE, defaultValueComputed: CURRENT_TIMESTAMP }
               - column: { name: deleted, type: BOOLEAN, defaultValueBoolean: false, constraints: { nullable: false } }
@@ -403,7 +402,7 @@ databaseChangeLog:
                   name: chosen_answer_option_id
                   type: UUID
                   constraints:
-                    nullable: false # Or true if skipping questions is allowed? Assuming false based on entity.
+                    nullable: false 
                     foreignKeyName: fk_user_answer_chosen_option
                     references: answer_option(id)
               # Inherited Audit Columns

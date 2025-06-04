@@ -357,47 +357,5 @@ public class ExceptionHelper {
 //        return new ResponseEntity<>(ApiResult.errorResponse(ex.getUserMsg(), ex.getErrorCode() != null ? ex.getErrorCode() : ex.getStatus().value()), ex.getStatus());
     }
 
-//    // FOYDALANUVCHI TOMONIDAN XATO SODIR BO'LGANDA
-//    @ExceptionHandler(value = {uz.pdp.appneedtostarttest.exception.RestException.class})
-//    public ResponseEntity<ApiResult<ErrorData>> handleException(uz.pdp.appneedtostarttest.exception.RestException ex) {
-//        sendMessageToTelegramChannel(ex);
-//        ex.printStackTrace();
-//
-//        return new ResponseEntity<>(ApiResult.errorResponse(ex.getUserMsg(), ex.getStatus().value()), HttpStatus.BAD_REQUEST);
-////        return new ResponseEntity<>(ApiResult.errorResponse(ex.getUserMsg(), ex.getStatus().value()), ex.getStatus());
-//    }
-
-//    private void sendMessageToTelegramChannel(Exception ex) {
-//        log.info("sendMessageToTelegramChannel");
-//
-//        if (isDev()) {
-//            return;
-//        }
-//        try {
-//            String message = ex.getMessage();
-//
-//            UserDTO currentUserOrNull = CommonUtils.getCurrentUserOrNull();
-//
-//            ServletUriComponentsBuilder servletUriComponentsBuilder = ServletUriComponentsBuilder.fromCurrentRequestUri();
-//            String url = servletUriComponentsBuilder.toUriString();
-//
-//            ExceptionMessageDTO exceptionMessageDTO = new ExceptionMessageDTO();
-//
-//            UserDTO userDTO = new UserDTO();
-//            userDTO.setFirstName(currentUserOrNull.getFirstName());
-//            userDTO.setLastName(currentUserOrNull.getLastName());
-//            userDTO.setPhoneNumber(currentUserOrNull.getPhoneNumber());
-//            userDTO.setId(currentUserOrNull.getId());
-//
-//            exceptionMessageDTO.setUser(userDTO);
-//            exceptionMessageDTO.setMessage(message);
-//            exceptionMessageDTO.setUrl(url);
-//            exceptionMessageDTO.setServiceName("education");
-//
-//            mqExceptionSender.sendExceptions(exceptionMessageDTO);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
 
 }
